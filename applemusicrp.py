@@ -17,7 +17,7 @@ c = coverpy.CoverPy()
 
 while True:
     try:
-        result = c.get_cover(music.currentTrack().album(), limit)
+        result = c.get_cover(music.currentTrack().name(), limit)
 
     except coverpy.exceptions.NoResultsException:
         print("Nothing found.")
