@@ -1,35 +1,89 @@
-from Foundation import *
-from ScriptingBridge import *
-import pypresence
+#!/usr/bin/env python3.11
+
+from ScriptingBridge import SBObject, SBApplication
 from pypresence import Presence
-import coverpy
+from rumps import *
+from threading import Thread
+
+import datetime
 import time
+import asyncio
+import syslog
 import requests
 
-client_id = "PUT-CLIENT-ID-HERE"  # find your client ID by creating an application through the discord developer portal
-music = SBApplication.applicationWithBundleIdentifier_("com.apple.Music")
-
-RPC = Presence(client_id)
-RPC.connect()
-limit = 1
-c = coverpy.CoverPy()
+import StatusBar
+import Music
 
 
-while True:
+def richPresenceLoop(musicInfo):
+    # create asynchronous event loop for multithreaded execution
     try:
-        result = c.get_cover(music.currentTrack().name(), limit)
+        asyncio.get_event_loop()
+    except:
+        asyncio.set_event_loop(asyncio.new_event_loop())
 
-    except coverpy.exceptions.NoResultsException:
-        print("Nothing found.")
-    except requests.exceptions.HTTPError:
-        print("Could not execute GET request")
+    # application info
+    client_id = "1084641054055211128"
+    RPC = Presence(client_id)
 
-    RPC.update(
-        large_image=result.artwork(100),
-        details=music.currentTrack().name() + " - " + music.currentTrack().album(),
-        state=music.currentTrack().artist(),
-    )
-    #
-    # print(music.currentTrack().name() + " - " + music.currentTrack().artist())
+    # connect to discord
+    while True:
+        try:
+            RPC.connect()
+            
+        except:
+            time.sleep(2)
 
-    time.sleep(0.5)
+        else:
+            break
+
+    # update rich presence
+    while True:
+        try:
+            trackName, album, artist, artURL = musicInfo.getTrackInfo()
+            playerPosition = musicInfo.getPlayerState()[0]
+            RPC.update(
+                large_image = artURL,
+                details=trackName
+                + " - "
+                + album,
+                state="by "
+                + artist
+                + " - "
+                + str(
+                    datetime.timedelta(minutes=0, seconds=int(playerPosition))
+                )[-5:])
+            
+        except:
+             time.sleep(1)
+
+        else:
+            time.sleep(1)
+
+def main():
+
+    # create music object, get initial info
+    music = Music.Music()
+    trackInfo = music.getTrackInfo()
+    
+    # start rich presence
+    richPresence = Thread(target=richPresenceLoop, args=[music])
+    richPresence.start()
+
+    # create status bar app
+    app = StatusBar.StatusBarApp(name="Apple Music Rich Presence", icon="imgs/trayIcon.png", music=music)
+
+    try:
+        app.menu.add(rumps.MenuItem(
+                title = trackInfo[0] + " - " + trackInfo[1],
+                icon='imgs/default_img.png',
+                dimensions=(35,35)))
+        app.run()
+    
+    except Exception as error:
+        syslog.syslog(syslog.LOG_ALERT, str(error))
+        syslog.syslog(syslog.LOG_ALERT, "except ran")
+
+    
+if __name__ == "__main__":
+    main()
