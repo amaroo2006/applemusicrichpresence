@@ -4,6 +4,7 @@
 # Discord Rich Presence for Apple Music on macOS
 ## Download bundled app:
 https://github.com/amaroo2006/applemusicrichpresence/releases/tag/latest
+
 OR
 ## Run python script:
 Install required libraries:
