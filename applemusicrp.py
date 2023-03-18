@@ -56,6 +56,7 @@ def richPresenceLoop(musicInfo):
             
         except:
              time.sleep(1)
+             RPC.connect()
 
         else:
             time.sleep(1)
