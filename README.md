@@ -7,11 +7,15 @@ https://github.com/amaroo2006/applemusicrichpresence/releases/tag/latest
 
 OR
 ## Run python script:
+Clone Repository: `git clone https://github.com/amaroo2006/applemusicrichpresence.git`
+
 Install required libraries:
 
  `pip3 install pyobjc-framework-ScriptingBridge`
+ 
  `pip3 install pypresence`
+ 
  `pip3 install requests`
  
  Run
- `python3 applemusicrc.py`
+ `python3 applemusicrp.py`
