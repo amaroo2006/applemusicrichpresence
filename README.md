@@ -5,6 +5,8 @@
 ## Download bundled app:
 https://github.com/amaroo2006/applemusicrichpresence/releases/tag/latest
 
+Optionally, add it as a login item so you don't have to open it yourself
+
 OR
 ## Run python script:
 Clone Repository: `git clone https://github.com/amaroo2006/applemusicrichpresence.git`
